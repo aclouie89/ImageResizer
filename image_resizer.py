@@ -57,7 +57,6 @@ def imageExists(image_path):
   if os.path.exists(image_path):
     return SUCCESS
   else:
-    dbg.dprintln(1, "\tFILE DOES NOT EXIST: " + str(filename))
     return ERROR_NO_FILE
 
 # check if jpg
@@ -66,7 +65,6 @@ def isJpg(filename):
     if re.search('.jpg', filename, re.IGNORECASE):
       return SUCCESS
     else:
-      dbg.dprintln(3, "\tNON-JPG IMAGE: " + str(filename))
       return ERROR_NO_IMAGE
   else:
     return ERROR_NO_FILE
@@ -120,7 +118,7 @@ def resizeImg(filename):
     except OSError:
       dbg.dprintln(1, "\tERROR opening file: " + str(filename) + " ..skipping")
   else:
-    dbg.dprintln(1, "\tFILE DOES NOT EXIST: " + str(filename))
+    dbg.dprintln(1, "\tFILE does not exist or invalid type: " + str(filename))
 
 
 ###################
