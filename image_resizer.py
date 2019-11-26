@@ -74,48 +74,51 @@ def isJpg(filename):
 # https://gist.github.com/tomvon/ae288482869b495201a0
 def resizeImg(filename):
   if isJpg(filename) == SUCCESS:
-    img = Image.open(filename)
-    exif = img._getexif()
-    dbg.dprintln(5, "WIDTH, HEIGHT: " + str(img.size[0]) + ", " + str(img.size[1]))
-    # save short edge
-    IS_WIDTH = True
-    short_edge = img.size[0]
-    # calculate percentages
-    if img.size[0] > img.size[1]:
-      short_edge = img.size[1]
-      IS_WIDTH = False
-    # check if short edge is already scaled, skip if so
-    if short_edge <= fixed_edge_p:
-      dbg.dprintln(4, "Resizing: SKIP")
-      return
-    else:
-      dbg.dprintln(4, "Resizing: VALID")
-    # calculate percentage
-    wpercent = (fixed_edge_p/float(short_edge))
-    # resize by short edge width
-    if IS_WIDTH:
-      long_edge = int((float(img.size[1])*float(wpercent)))
-      img = img.resize((fixed_edge_p,long_edge), PIL.Image.ANTIALIAS)
-    # resize by short edge height
-    else:
-      long_edge = int((float(img.size[0])*float(wpercent)))
-      img = img.resize((long_edge,fixed_edge_p), PIL.Image.ANTIALIAS)
-    # save exif data
-    if exif is not None:
-      for tag, value in exif.items():
-        decoded = TAGS.get(tag, tag)
-        if decoded == 'Orientation':
-          if value == 3:
-            img = img.rotate(180, expand=True)
-          if value == 6:
-            img = img.rotate(270, expand=True)
-          if value == 8:
-            img = img.rotate(90, expand=True)
-    # save image
     try:
-      img.save(filename, 'JPEG', quality=quality_level)
-    except IOError as e:
-      dbg.dprintln(1, "\tERROR SAVING FILE: " + str(filename))
+      img = Image.open(filename)
+      exif = img._getexif()
+      dbg.dprintln(5, "WIDTH, HEIGHT: " + str(img.size[0]) + ", " + str(img.size[1]))
+      # save short edge
+      IS_WIDTH = True
+      short_edge = img.size[0]
+      # calculate percentages
+      if img.size[0] > img.size[1]:
+        short_edge = img.size[1]
+        IS_WIDTH = False
+      # check if short edge is already scaled, skip if so
+      if short_edge <= fixed_edge_p:
+        dbg.dprintln(4, "Resizing: SKIP")
+        return
+      else:
+        dbg.dprintln(4, "Resizing: VALID")
+      # calculate percentage
+      wpercent = (fixed_edge_p/float(short_edge))
+      # resize by short edge width
+      if IS_WIDTH:
+        long_edge = int((float(img.size[1])*float(wpercent)))
+        img = img.resize((fixed_edge_p,long_edge), PIL.Image.ANTIALIAS)
+      # resize by short edge height
+      else:
+        long_edge = int((float(img.size[0])*float(wpercent)))
+        img = img.resize((long_edge,fixed_edge_p), PIL.Image.ANTIALIAS)
+      # save exif data
+      if exif is not None:
+        for tag, value in exif.items():
+          decoded = TAGS.get(tag, tag)
+          if decoded == 'Orientation':
+            if value == 3:
+              img = img.rotate(180, expand=True)
+            if value == 6:
+              img = img.rotate(270, expand=True)
+            if value == 8:
+              img = img.rotate(90, expand=True)
+      # save image
+      try:
+        img.save(filename, 'JPEG', quality=quality_level)
+      except IOError as e:
+        dbg.dprintln(1, "\tERROR SAVING FILE: " + str(filename))
+    except OSError:
+      dbg.dprintln(1, "\tERROR opening file: " + str(filename) + " ..skipping")
   else:
     dbg.dprintln(1, "\tFILE DOES NOT EXIST: " + str(filename))
 
